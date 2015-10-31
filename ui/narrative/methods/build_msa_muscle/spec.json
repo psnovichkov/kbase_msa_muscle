@@ -1,0 +1,66 @@
+{
+	"ver": "0.0.1",
+	
+	"authors": [
+		"psnovichkov"
+	],
+	"contact": "help@kbase.us",
+	"visible": true,
+	"categories": ["active"],
+	"widgets": {
+		"input": null,
+		"output": null
+	},
+	"parameters": [ 
+		{
+			"id": "featureset_id",
+			"optional": false,
+			"advanced": false,
+			"allow_multiple": false,
+			"default_values": [ "" ],
+			"field_type": "text",
+			"text_options": {
+				"valid_ws_types": ["KBaseCollections.FeatureSet"]
+			}
+		},
+		{
+			"id": "msa_id",
+			"optional": false,
+			"advanced": false,
+			"allow_multiple": false,
+			"default_values": [ "" ],
+			"field_type": "text",
+			"text_options": {
+				"valid_ws_types": ["KBaseTrees.MSA"]
+			}
+		}
+	],
+    "behavior": {
+		"service-mapping": {
+			"url": "",
+			"name": "msa_muscle",
+			"method": "build_msa",
+			"input_mapping": [
+				{
+					"narrative_system_variable": "workspace",
+					"target_argument_position": 0
+				},
+				{
+					"input_parameter": "featureset_id",
+					"target_argument_position": 1
+				},
+				{
+					"input_parameter": "msa_id",
+					"target_argument_position": 2
+				}                
+			],
+			"output_mapping": [
+				{
+					"service_method_output_path": [0],
+					"target_property": "muscle_file_size"
+				}
+			]
+		}
+	},
+	"job_id_output_field": "docker"       
+}
