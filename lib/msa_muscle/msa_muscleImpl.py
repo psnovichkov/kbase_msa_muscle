@@ -38,7 +38,7 @@ This sample module contains one small method - count_contigs.
         #BEGIN build_msa
         returnVal = ''
         
-        statinfo = os.stat('/kb/runtime/muscle/muscle')
+        statinfo = os.stat('/kb/runtime/muscle/muscle3.8.31_i86linux64')
         returnVal = str(statinfo.st_size)
         
         #END build_msa
