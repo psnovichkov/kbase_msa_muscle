@@ -22,14 +22,31 @@ RUN \
 # RUN apt-get update
 
 RUN mkdir -p /tmp/muscle
+
+
+# --- {{
+# WORKDIR /tmp/muscle
+# ADD http://www.drive5.com/muscle/downloads3.8.31/muscle3.8.31_src.tar.gz ./muscle3.8.31_src.tar.gz
+# RUN tar xzfp muscle3.8.31_src.tar.gz
+# WORKDIR /tmp/muscle/muscle3.8.31/src 
+# RUN make
+# RUN mkdir -p /kb/runtime/muscle
+# RUN cp /tmp/muscle/muscle3.8.31/src/muscle /kb/runtime/muscle/muscle
+
+# -- I have:
+#   [91mmake: execvp: ./mk: Text file busy
+#   [91mmake: *** [muscle] Error 127
+# --- }}
+
+
 WORKDIR /tmp/muscle
-ADD http://www.drive5.com/muscle/downloads3.8.31/muscle3.8.31_src.tar.gz ./muscle3.8.31_src.tar.gz
-RUN tar xzfp muscle3.8.31_src.tar.gz
-WORKDIR /tmp/muscle/muscle3.8.31/src 
-RUN make
+ADD http://www.drive5.com/muscle/downloads3.8.31/muscle3.8.31_i86linux64.tar.gz ./muscle3.8.31_i86linux64.tar.gz
+RUN tar xzfp muscle3.8.31_i86linux64.tar.gz
 RUN mkdir -p /kb/runtime/muscle
-RUN cp /tmp/muscle/muscle3.8.31/src/muscle /kb/runtime/muscle/muscle
-RUN ln -s /kb/runtime/muscle/muscle /kb/runtime/bin/muscle
+RUN cp /tmp/muscle/muscle3.8.31_i86linux64 /kb/runtime/muscle/muscle3.8.31_i86linux64
+
+
+RUN ln -s /kb/runtime/muscle/muscle3.8.31_i86linux64 /kb/runtime/bin/muscle
 RUN rm -rf /tmp/muscle/*
 
 # -----------------------------------------
