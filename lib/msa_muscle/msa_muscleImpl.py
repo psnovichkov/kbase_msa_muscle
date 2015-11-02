@@ -43,13 +43,13 @@ This sample module contains one small method - count_contigs.
     
     def buildGenome2Features(self, ws, workspace_name, featureset_id):
         genome2Features = {}
-            featureSet = ws.get_objects([{'ref':workspace_name+'/'+featureset_id}])[0]['data']
-            features = featureSet['elements']
-            for fId in features:
-                genomeRef = features[fId][0]
-                if genomeRef not in genome2Features:
-                    genome2Features[genomeRef] = []
-                genome2Features[genomeRef].append(fId)
+        featureSet = ws.get_objects([{'ref':workspace_name+'/'+featureset_id}])[0]['data']
+        features = featureSet['elements']
+        for fId in features:
+            genomeRef = features[fId][0]
+            if genomeRef not in genome2Features:
+                genome2Features[genomeRef] = []
+            genome2Features[genomeRef].append(fId)
         return genome2Features
     
     
