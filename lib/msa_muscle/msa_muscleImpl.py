@@ -1,5 +1,9 @@
 #BEGIN_HEADER
 from biokbase.workspace.client import Workspace as workspaceService
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio.Alphabet import generic_protein
 import os
 #END_HEADER
 
@@ -22,24 +26,8 @@ This sample module contains one small method - count_contigs.
     #########################################
     #BEGIN_CLASS_HEADER
     workspaceURL = None
-    
-    
-    def testRun(self, ctx, workspace_name):
-        returnVal = ''
-        
-        fastaFileIn = '/tmp/muscle/in.fasta'
-        fastaFileOut = '/tmp/muscle/out.fasta'
-        ff = open( fastaFileIn,'w')
-        ff.write('>1\nMTTPVDAPKWPRQIPYIIASEACERFSFYG\n')
-        ff.write('>2\nMTTPVDAPAAAAAKWPRQIPYIIASEACERFSFYG\n')
-        ff.write('>3\nMTTPVDAPKWPRQIPYIQQQQQQQIASEACERFSFYG\n')
-        ff.close()
-        
-        os.system('/kb/runtime/bin/muscle ' + ' -in ' + fastaFileIn + ' -out ' + fastaFileOut)
-        
-        with open(fastaFileOut, 'r') as fr:
-            returnVal = fr.read()
-        return returnVal
+    fileFastaName = '/tmp/muscle/in.fasta'
+    fileOutputName = '/tmp/muscle/out.fasta'
     
     def buildGenome2Features(self, ws, workspace_name, featureset_id):
         genome2Features = {}
@@ -52,7 +40,21 @@ This sample module contains one small method - count_contigs.
             genome2Features[genomeRef].append(fId)
         return genome2Features
     
-    
+    def exportFasta(self, ws, workspace_name, featureset_id):
+        # Build genome2Features hash
+        genome2Features = self.buildGenome2Features(ws, workspace_name, featureset_id)
+        
+        # Process each genome one by one
+        records = []
+        for genomeRef in genome2Features:
+            genome = ws.get_objects([{'ref':genomeRef}])[0]['data']
+            featureIds = genome2Features[genomeRef]
+            for feature in genome['features']:
+                for fId in featureIds:
+                    if fId == feature['id']:
+                        record = SeqRecord(Seq(feature['protein_translation']), id=fId, description=genomeRef)
+                        records.append(record)
+        SeqIO.write(records, self.fileFastaName, "fasta")
     
     #END_CLASS_HEADER
 
@@ -72,34 +74,19 @@ This sample module contains one small method - count_contigs.
         # return variables are: returnVal
         #BEGIN build_msa
         returnVal = ''
-        
-        fileFastaName = '/tmp/muscle/in.fasta'
-        fileOutputName = '/tmp/muscle/out.fasta'
  
         # create workspace client
         token = ctx['token']
         ws = workspaceService(self.workspaceURL, token=token)
                  
-        # Build genome2Features hash
-        genome2Features = self.buildGenome2Features(ws, workspace_name, featureset_id)
-                     
-        # Process each genome one by one
-        with open(fileFastaName, 'w') as ff:
-            for genomeRef in genome2Features:
-                 genome = ws.get_objects([{'ref':genomeRef}])[0]['data']
-                 featureIds = genome2Features[genomeRef]
-                 for feature in genome['features']:
-                     for fId in featureIds:
-                         if fId == feature['id']:
-                             ff.write('>' + fId + '\n' + feature['protein_translation'] + '\n')
+        self.exportFasta(ws, workspace_name, featureset_id)
 
         os.system('/kb/runtime/bin/muscle ' + ' -in ' + fileFastaName + ' -out ' + fileOutputName)
         
         with open(fileOutputName, 'r') as fr:
             returnVal = fr.read()
         
-#        statinfo = os.stat('/kb/runtime/muscle/muscle3.8.31_i86linux64')
-#        returnVal = str(statinfo.st_size)
+        
 
         #END build_msa
 
