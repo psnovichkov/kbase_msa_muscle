@@ -87,11 +87,11 @@ This sample module contains one small method - count_contigs.
         with open(fileFastaName, 'w') as ff:
             for genomeRef in genome2Features:
                  genome = ws.get_objects([{'ref':genomeRef}])[0]['data']
-                     featureIds = genome2Features[genomeRef]
-                         for feature in genome['features']:
-                             for fId in featureIds:
-                                 if fId == feature['id']:
-                                     ff.write('>' + fId + '\n' + feature['protein_translation'] + '\n')
+                 featureIds = genome2Features[genomeRef]
+                 for feature in genome['features']:
+                     for fId in featureIds:
+                         if fId == feature['id']:
+                             ff.write('>' + fId + '\n' + feature['protein_translation'] + '\n')
 
         os.system('/kb/runtime/bin/muscle ' + ' -in ' + fileFastaName + ' -out ' + fileOutputName)
         
