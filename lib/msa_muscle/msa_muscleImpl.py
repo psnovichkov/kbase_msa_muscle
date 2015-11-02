@@ -74,7 +74,7 @@ This sample module contains one small method - count_contigs.
         returnVal = ''
         
         fileFastaName = '/tmp/muscle/in.fasta'
-        fileOutputName = '/tmp/muscle/out.fasta'        
+        fileOutputName = '/tmp/muscle/out.fasta'
  
         # create workspace client
         token = ctx['token']
