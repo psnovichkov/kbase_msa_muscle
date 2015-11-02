@@ -22,20 +22,9 @@ This sample module contains one small method - count_contigs.
     #########################################
     #BEGIN_CLASS_HEADER
     workspaceURL = None
-    #END_CLASS_HEADER
-
-    # config contains contents of config file in a hash or None if it couldn't
-    # be found
-    def __init__(self, config):
-        #BEGIN_CONSTRUCTOR
-        self.workspaceURL = config['workspace-url']
-        #END_CONSTRUCTOR
-        pass
-
-    def build_msa(self, ctx, workspace_name, featureset_id, msa_id):
-        # ctx is the context object
-        # return variables are: returnVal
-        #BEGIN build_msa
+    
+    
+    def testRun(self, ctx, workspace_name):
         returnVal = ''
         
         fastaFileIn = '/tmp/muscle/in.fasta'
@@ -50,7 +39,65 @@ This sample module contains one small method - count_contigs.
         
         with open(fastaFileOut, 'r') as fr:
             returnVal = fr.read()
-                
+        return returnVal
+    
+    def buildGenome2Features(self, ws, workspace_name, featureset_id):
+        genome2Features = {}
+            featureSet = ws.get_objects([{'ref':workspace_name+'/'+featureset_id}])[0]['data']
+            features = featureSet['elements']
+            for fId in features:
+                genomeRef = features[fId][0]
+                if genomeRef not in genome2Features:
+                    genome2Features[genomeRef] = []
+                genome2Features[genomeRef].append(fId)
+        return genome2Features
+    
+    
+    
+    #END_CLASS_HEADER
+
+    # config contains contents of config file in a hash or None if it couldn't
+    # be found
+    def __init__(self, config):
+        #BEGIN_CONSTRUCTOR
+        self.workspaceURL = config['workspace-url']
+        #END_CONSTRUCTOR
+        pass
+
+
+
+
+    def build_msa(self, ctx, workspace_name, featureset_id, msa_id):
+        # ctx is the context object
+        # return variables are: returnVal
+        #BEGIN build_msa
+        returnVal = ''
+        
+        fileFastaName = '/tmp/muscle/in.fasta'
+        fileOutputName = '/tmp/muscle/out.fasta'        
+ 
+        # create workspace client
+        token = ctx['token']
+        ws = workspaceService(self.workspaceURL, token=token)
+                 
+        # Build genome2Features hash
+        genome2Features = self.buildGenome2Features(ws, workspace_name, featureset_id)
+                     
+        # Process each genome one by one
+        with open(fileFastaName, 'w') as ff:
+            for genomeRef in genome2Features:
+                 genome = ws.get_objects([{'ref':genomeRef}])[0]['data']
+                     featureIds = genome2Features[genomeRef]
+                         for feature in genome['features']:
+                             for fId in featureIds:
+                                 if fId == feature['id']:
+                                     ff.write('>' + fId + '\n' + feature['protein_translation'] + '\n')
+
+        os.system('/kb/runtime/bin/muscle ' + ' -in ' + fileFastaName + ' -out ' + fileOutputName)
+        
+        with open(fileOutputName, 'r') as fr:
+            returnVal = fr.read()
+        
 #        statinfo = os.stat('/kb/runtime/muscle/muscle3.8.31_i86linux64')
 #        returnVal = str(statinfo.st_size)
 
