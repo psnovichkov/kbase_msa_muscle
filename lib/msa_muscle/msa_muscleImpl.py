@@ -38,9 +38,22 @@ This sample module contains one small method - count_contigs.
         #BEGIN build_msa
         returnVal = ''
         
-        statinfo = os.stat('/kb/runtime/muscle/muscle3.8.31_i86linux64')
-        returnVal = str(statinfo.st_size)
+        fastaFileIn = '/tmp/muscle/in.fasta'
+        fastaFileOut = '/tmp/muscle/out.fasta'
+        ff = open( fastaFileIn,'w')
+        ff.write('>1\nMTTPVDAPKWPRQIPYIIASEACERFSFYG\n')
+        ff.write('>2\nMTTPVDAPAAAAAKWPRQIPYIIASEACERFSFYG\n')
+        ff.write('>3\nMTTPVDAPKWPRQIPYIQQQQQQQIASEACERFSFYG\n')
+        ff.close()
         
+        os.system('/kb/runtime/bin/muscle ' + ' -in ' + fastaFileIn + ' -out ' + fastaFileOut)
+        
+        with open(fastaFileOut, 'r') as fr:
+            returnVal = fr.read()
+                
+#        statinfo = os.stat('/kb/runtime/muscle/muscle3.8.31_i86linux64')
+#        returnVal = str(statinfo.st_size)
+
         #END build_msa
 
         # At some point might do deeper type checking...
