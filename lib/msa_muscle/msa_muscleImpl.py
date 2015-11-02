@@ -78,12 +78,14 @@ This sample module contains one small method - count_contigs.
         # create workspace client
         token = ctx['token']
         ws = workspaceService(self.workspaceURL, token=token)
-                 
-        self.exportFasta(ws, workspace_name, featureset_id)
-
-        os.system('/kb/runtime/bin/muscle ' + ' -in ' + fileFastaName + ' -out ' + fileOutputName)
         
-        with open(fileOutputName, 'r') as fr:
+        # Export fasta
+        self.exportFasta(ws, workspace_name, featureset_id)
+        
+        # Run muscle
+        os.system('/kb/runtime/bin/muscle ' + ' -in ' + self.fileFastaName + ' -out ' + self.fileOutputName)
+        
+        with open(self.fileOutputName, 'r') as fr:
             returnVal = fr.read()
         
         
