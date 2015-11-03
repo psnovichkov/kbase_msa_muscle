@@ -67,9 +67,10 @@ This sample module contains one small method - count_contigs.
         }
         for record in SeqIO.parse( self.fileOutputName, "fasta"):
             msa['row_order'].append(record.id)
-            msa['alignment'][record.id] = record.seq
-            alignment_length = len(record.seq)
-            msa['alignment_length'] = alignment_length
+            sequence = str(record.seq)
+            msa['alignment'][record.id] = sequence
+            alignment_length = len(sequence)
+        msa['alignment_length'] = alignment_length
         
         ws.save_objects({'workspace':workspace_name, 'objects':[{'name':msa_id, 'type':'KBaseTrees.MSA', 'data': msa}]})
         return str(msa)
