@@ -56,6 +56,13 @@ This sample module contains one small method - count_contigs.
                         records.append(record)
         SeqIO.write(records, self.fileFastaName, "fasta")
     
+    def createMSA(self, ws, workspace_name, msa_id):
+        retval = ''
+        for record in SeqIO.parse( self.fileOutputName, "fasta"):
+            retval += record.id + ', '
+        return retval
+    
+    
     #END_CLASS_HEADER
 
     # config contains contents of config file in a hash or None if it couldn't
@@ -85,9 +92,8 @@ This sample module contains one small method - count_contigs.
         # Run muscle
         os.system('/kb/runtime/bin/muscle ' + ' -in ' + self.fileFastaName + ' -out ' + self.fileOutputName)
         
-        with open(self.fileOutputName, 'r') as fr:
-            returnVal = fr.read()
-        
+        # Create MSA object
+        returnVal = self.createMSA(ws, workspace_name, msa_id)
         
 
         #END build_msa
