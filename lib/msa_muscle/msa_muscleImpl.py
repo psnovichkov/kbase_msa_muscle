@@ -105,7 +105,7 @@ This sample module contains one small method - count_contigs.
         os.system('/kb/runtime/bin/muscle ' + ' -in ' + self.fileFastaName + ' -out ' + self.fileOutputName)
         
         # Create MSA object
-        returnVal = self.createMSA(ws, workspace_name, msa_id)
+        returnVal = self.createMSA(ws, workspace_name, featureset_id, msa_id)
         
 
         #END build_msa
