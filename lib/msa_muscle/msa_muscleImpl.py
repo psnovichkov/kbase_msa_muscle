@@ -56,11 +56,23 @@ This sample module contains one small method - count_contigs.
                         records.append(record)
         SeqIO.write(records, self.fileFastaName, "fasta")
     
-    def createMSA(self, ws, workspace_name, msa_id):
-        retval = ''
+    def createMSA(self, ws, workspace_name, featureset_id, msa_id):
+        alignment_length = 0
+        msa = {
+            'name' : 'multiple alignmemnt for FeatureSet: ' + featureset_id,
+            'sequence_type': 'protein',
+            'alignment_length': 0,
+            'alignment': {},
+            'row_order': []
+        }
         for record in SeqIO.parse( self.fileOutputName, "fasta"):
-            retval += record.id + ', '
-        return retval
+            msa['row_order'].append(record.id)
+            msa['alignment'][record.id] = record.seq
+            alignment_length = len(record.seq)
+            msa['alignment_length'] = alignment_length
+        
+        ws.save_objects({'workspace':workspace_name, 'objects':[{'name':msa_id, 'type':'KBaseTrees.MSA', 'data': msa}]})
+        return str(msa)
     
     
     #END_CLASS_HEADER
